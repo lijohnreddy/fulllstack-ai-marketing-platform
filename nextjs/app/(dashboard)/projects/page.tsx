@@ -1,5 +1,6 @@
 import React from "react";
 
+// Temporary comment to trigger Vercel deploy
 export default async function ProjectsPage() {
   const projects = [
     { name: "project 1", description: "project 1 description" },
