@@ -53,7 +53,7 @@ function Sidebar() {
     return () => {
       window.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
+  }, [isMobile, isOpen]);
 
   const toggleSidebar = () => {
     if (isMobile) {
