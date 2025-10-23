@@ -1,20 +1,18 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
 
-interface SidebarToggleprops {
+interface SidebarToggleProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
 }
 
-function SidebarToggle({ isCollapsed, toggleSidebar }: SidebarToggleprops) {
+function SidebarToggle({ isCollapsed, toggleSidebar }: SidebarToggleProps) {
   return (
     <div
       className={cn(
-        "flex border-t border-gray-200",
+        "hidden lg:flex border-t border-gray-200",
         isCollapsed ? "p-4 justify-center" : "p-4 justify-end"
       )}
     >

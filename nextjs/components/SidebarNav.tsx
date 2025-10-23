@@ -6,36 +6,35 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface SidebarNavProps {
-  isMobile: boolean;
   isCollapsed: boolean;
 }
 
 interface NavItem {
-  herf: string;
+  href: string;
   label: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   isActive: (pathname: string) => boolean;
 }
 
-function SidebarNav({ isMobile, isCollapsed }: SidebarNavProps) {
+function SidebarNav({ isCollapsed }: SidebarNavProps) {
   const pathname = usePathname();
   const navItems: NavItem[] = [
     {
-      herf: "/projects",
-      label: "projects",
+      href: "/projects",
+      label: "Projects",
       icon: Home,
       isActive: (pathname) =>
         pathname === "/projects" || pathname.startsWith("/project/"),
     },
     {
-      herf: "/templates",
+      href: "/templates",
       label: "Templates",
       icon: LayoutDashboard,
       isActive: (pathname) =>
-        pathname === "/templates" || pathname.startsWith("/templates/"),
+        pathname === "/templates" || pathname.startsWith("/template/"),
     },
     {
-      herf: "/settings",
+      href: "/settings",
       label: "Settings",
       icon: Settings,
       isActive: (pathname) => pathname === "/settings",
@@ -43,23 +42,26 @@ function SidebarNav({ isMobile, isCollapsed }: SidebarNavProps) {
   ];
 
   return (
-    <div className="space-y4 overflow-hidden mb-auto">
+    <div className="space-y-4 overflow-hidden mb-auto">
       {navItems.map((item) => (
         <Button
-          key={item.herf}
+          key={item.href}
           variant="ghost"
           asChild
           className={cn(
-            "w-full justifi-start hover:text-main hover:bg-grey-200 flex items-center lest-lg font-medium",
-            !isMobile && isCollapsed && "justify-center p-2",
-            item.isActive(pathname) && "bg-gray-200 textmain"
+            "w-full justify-start hover:text-main hover:bg-gray-200 flex items-center text-lg font-medium",
+            isCollapsed && "lg:justify-center lg:p-2",
+            item.isActive(pathname) && "bg-gray-200 text-main"
           )}
         >
-          <Link href={item.herf}>
+          <Link href={item.href}>
             <item.icon className="h-[22px] w-[22px]" />
-            {(isMobile || !isCollapsed) && (
-              <span className="ml-3">{item.label}</span>
+            {/* DESKTOP */}
+            {!isCollapsed && (
+              <span className="ml-3 hidden lg:inline">{item.label}</span>
             )}
+            {/* MOBILE */}
+            <span className="ml-3 hidden lg:hidden">{item.label}</span>
           </Link>
         </Button>
       ))}
