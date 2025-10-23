@@ -5,25 +5,14 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in",
   "/sign-up",
   "/pricing",
-  "/projects", // Add this to make projects public for testing
+  "/projects", // Keep this public for now to test
 ]);
 
-export default clerkMiddleware(async (auth, request) => {
+export default clerkMiddleware((auth, request) => {
   if (!isPublicRoute(request)) {
-    // Use await to get the session
-    const session = await auth();
-
-    if (!session.userId) {
-      // Redirect to sign-in if not authenticated
-      return Response.redirect(new URL("/sign-in", request.url));
-    }
-
-    // User is authenticated, allow access
-    return;
+    // Let Clerk handle authentication and redirection automatically
+    auth().protect();
   }
-
-  // Public route, allow access
-  return;
 });
 
 export const config = {
