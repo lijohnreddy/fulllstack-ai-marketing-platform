@@ -49,7 +49,7 @@ function SidebarNav({ isCollapsed }: SidebarNavProps) {
           variant="ghost"
           asChild
           className={cn(
-            "w-full justify-start hover:text-main hover:bg-gray-200 flex items-center text-lg font-medium",
+            "w-full justify-start hover:text-main hover:bg-gray-200 flex items-center text-lg font-medium text-gray-700",
             isCollapsed && "lg:justify-center lg:p-2",
             item.isActive(pathname) && "bg-gray-200 text-main"
           )}
@@ -61,7 +61,7 @@ function SidebarNav({ isCollapsed }: SidebarNavProps) {
               <span className="ml-3 hidden lg:inline">{item.label}</span>
             )}
             {/* MOBILE */}
-            <span className="ml-3 hidden lg:hidden">{item.label}</span>
+            <span className="ml-3 lg:hidden">{item.label}</span>
           </Link>
         </Button>
       ))}
