@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/projects",
   "/templates",
   "/settings",
+  "/api/upload",
   "/(.*)", // This makes ALL routes public as a catch-all
 ]);
 
