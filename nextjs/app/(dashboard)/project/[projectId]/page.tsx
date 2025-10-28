@@ -9,7 +9,7 @@ interface ProjectPageProps {
   };
 }
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { projectId } = params;
+  const { projectId } = await params;
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

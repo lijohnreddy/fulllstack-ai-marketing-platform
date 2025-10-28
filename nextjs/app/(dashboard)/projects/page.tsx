@@ -8,7 +8,6 @@ import React from "react";
 export default async function ProjectsPage() {
   //  Fetch data from database
   const projects = await getProjectsForUser();
-  await new Promise((resolve) => setTimeout(resolve, 10000));
   return (
     <div className="w-full">
       {/* TODO: Create project list header with create sction */}
