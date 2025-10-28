@@ -5,17 +5,13 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in",
   "/sign-up",
   "/pricing",
-  "/projects",
-  "/templates",
-  "/settings",
   "/api/upload",
-  "/(.*)", // This makes ALL routes public as a catch-all
 ]);
 
 export default clerkMiddleware((auth, request) => {
-  // All routes are public, so no authentication checks needed
-  // Just allow all requests to proceed
-  return;
+  if (!isPublicRoute(request)) {
+    auth.protect();
+  }
 });
 
 export const config = {
