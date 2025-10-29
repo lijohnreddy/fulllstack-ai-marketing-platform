@@ -24,21 +24,21 @@ export async function POST(request: Request): Promise<NextResponse> {
             "audio/mpeg",
             "audio/ogg",
             "text/plain",
-            "text/mmarkdown",
+            "text/markdown",
           ],
           maximumSizeInBytes: 5 * 1024 * 1024 * 1024, //5GB
           addRandomSuffix: true,
-          // callbackUrl: 'https://example.com/api/avatar/upload',
-          // optional, `callbackUrl` is automatically computed when hosted on Vercel
           tokenPayload: clientPayload,
-          // optional, sent to your server on upload completion
-          // you could pass a user id from auth, or a value from clientPayload
         };
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Called by Vercel API on client upload completion
-        // Use tools like ngrok if you want this to work locally
+      // callbackUrl: 'https://example.com/api/avatar/upload',
+      // optional, `callbackUrl` is automatically computed when hosted on Vercel
+      // optional, sent to your server on upload completion
+      // you could pass a user id from auth, or a value from clientPayload
+      // Called by Vercel API on client upload completion
+      // Use tools like ngrok if you want this to work locally
 
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
         if (!tokenPayload) return;
 
         const { projectId, fileType, mimeType, size } =
@@ -55,11 +55,16 @@ export async function POST(request: Request): Promise<NextResponse> {
               title: blob.pathname.split("/").pop() || blob.pathname,
               fileName: blob.pathname,
               fileUrl: blob.url,
-              fileType,
-              mimeType,
-              size,
+              fileType: fileType || blob.contentType || `unknown`,
+              mimeType:
+                mimeType || blob.contentType || `application/octet-stream`,
+              size: Number(size),
+              content: "",
+              tokenCount: 0,
             })
             .returning();
+
+          console.log(`Asset saved to DB`, newAsset);
 
           await db.insert(assetProcessingJobTable).values({
             assetId: newAsset.id,
