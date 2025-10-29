@@ -1,21 +1,24 @@
 "use client";
 
 import { Upload } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Button } from "../ui/button";
-import { upload } from "@vercel/blob/client";
-import toast from "react-hot-toast";
 
 interface UploadStepHeaderProps {
-  projectId: string;
+  setBrowserFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  browserFiles: File[];
+  inputFileRef: React.RefObject<HTMLInputElement>;
+  handleUpload: () => Promise<void>;
+  uploading: boolean;
 }
 
-function UploadStepHeader({ projectId }: UploadStepHeaderProps) {
-  const [uploading, setUploding] = useState(false);
-  const [browserFiles, setBrowserFiles] = useState<File[]>([]);
-
-  const inputFileRef = useRef<HTMLInputElement>(null);
-
+function UploadStepHeader({
+  setBrowserFiles,
+  browserFiles,
+  inputFileRef,
+  handleUpload,
+  uploading,
+}: UploadStepHeaderProps) {
   //   UPLOAD, HANDLE FILE SELECT, HANDLE FILE DROP
   const handleDrop = () => (e: React.DragEvent<HTMLDivElement>) => {
     if (e.dataTransfer.files) {
@@ -42,44 +45,6 @@ function UploadStepHeader({ projectId }: UploadStepHeaderProps) {
   };
 
   // check if the files are uploaded
-  const handleUpload = async () => {
-    setUploding(true);
-    try {
-      // uploadfiles
-      const uploadPromis = browserFiles.map(async (file) => {
-        const fileData = {
-          projectId,
-          title: file.name,
-          fileType: getFileType(file),
-          mimeType: file.type,
-          size: file.size,
-        };
-
-        const filename = `${projectId}/${file.name}`;
-        await upload(filename, file, {
-          access: "public",
-          handleUploadUrl: `/api/upload`,
-          multipart: true,
-          clientPayload: JSON.stringify(fileData),
-        });
-      });
-
-      const uploadResults = await Promise.all(uploadPromis);
-
-      toast.success(`Files uploaded ${uploadResults.length} successfully`);
-      setBrowserFiles([]);
-      if (inputFileRef.current) {
-        inputFileRef.current.value = "";
-      }
-
-      // TODO: fetch fies
-    } catch (error) {
-      console.error("Error in upload process", error);
-      toast.error("Failed to upload one or more files. Please try again.");
-    } finally {
-      setUploding(false);
-    }
-  };
 
   return (
     <div>
