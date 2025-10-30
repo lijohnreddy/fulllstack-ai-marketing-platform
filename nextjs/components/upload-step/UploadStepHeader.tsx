@@ -36,14 +36,6 @@ function UploadStepHeader({
     }
   };
 
-  const getFileType = (file: File) => {
-    if (file.type.startsWith("/video")) return "video";
-    if (file.type.startsWith("/video")) return "video";
-    if (file.type === "text/plain") return "text";
-    if (file.type === "text/markdown") return "markdown";
-    return "other";
-  };
-
   // check if the files are uploaded
 
   return (
