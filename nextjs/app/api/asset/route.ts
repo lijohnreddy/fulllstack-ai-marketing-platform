@@ -2,7 +2,7 @@ import { db } from "@/server/db";
 import { assetTable } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import z, { success } from "zod";
+import z from "zod";
 
 const updateAssetSchema = z.object({
   content: z.string(),
