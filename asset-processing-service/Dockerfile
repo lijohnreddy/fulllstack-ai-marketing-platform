@@ -2,6 +2,7 @@
 FROM python:3.13-slim
 
 # TODO: add the dependencies to the Dockerfile
+RUN apt-get update && apt-get install -y ffmpeg 
 
 # set the working directory in the container
 WORKDIR /app
