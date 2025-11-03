@@ -6,7 +6,7 @@ import UploadStepBody from "./UploadStepBody";
 import ConfirmationModel from "../ui/ConfirmationModel";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Asset } from "@/server/db/schema";
+import { Asset, AssetProcessingJob } from "@/server/db/schema";
 import { upload } from "@vercel/blob/client";
 
 interface ManageUploadStepprops {
@@ -20,11 +20,16 @@ function ManageUploadStep({ projectId }: ManageUploadStepprops) {
   const [uploadAssets, setUploadAssets] = useState<Asset[]>([]);
   const [uploading, setUploading] = useState(false);
   const [browserFiles, setBrowserFiles] = useState<File[]>([]);
-
+  const [assetJobbStatus, setAssetJobStatus] = useState<Record<string, string>>(
+    {}
+  );
+  const prevAssetJobStatusRef = useRef<Record<string, string>>({});
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const fetchAsset = useCallback(async () => {
-    setIsLoading(true);
+    if (uploadAssets.length == 0) {
+      setIsLoading(true);
+    }
     try {
       const response = await axios.get<Asset[]>(
         `/api/projects/${projectId}/assets`
@@ -36,11 +41,59 @@ function ManageUploadStep({ projectId }: ManageUploadStepprops) {
     } finally {
       setIsLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, uploadAssets.length]);
 
   useEffect(() => {
     fetchAsset();
   }, [fetchAsset]);
+
+  const fetchAssetProcessingJobs = useCallback(async () => {
+    try {
+      const response = await axios.get<AssetProcessingJob[]>(
+        `/api/projects/${projectId}/asset-processing-jobs`
+      );
+
+      // Create too record to store the job status for each asset
+      const newAssetJobStatus: Record<string, string> = {};
+      response.data.forEach((job) => {
+        newAssetJobStatus[job.assetId] = job.status;
+      });
+      // Update the asset job status
+      setAssetJobStatus(newAssetJobStatus);
+
+      // Compare the previous and current status of the job to determine if i need to fetch assets again
+
+      const prevAssetJobStatus = prevAssetJobStatusRef.current;
+      const isAnyStatusChangedToCompleted = response.data.some((job) => {
+        const prevStatus = prevAssetJobStatus[job.assetId];
+        const newStatus = job.status;
+        return prevStatus !== "completed" && newStatus === "completed";
+      });
+
+      // Update the previous statuses reference
+      prevAssetJobStatusRef.current = newAssetJobStatus;
+
+      if (isAnyStatusChangedToCompleted) {
+        console.log("Fetching files after status change to completed");
+        await fetchAsset();
+      }
+    } catch (error) {
+      console.error("Failed to fetch assets Processing jobs", error);
+    }
+  }, [fetchAsset, projectId]);
+
+  useEffect(() => {
+    fetchAssetProcessingJobs();
+
+    const fetchAssetProcessingJobsInterval = setInterval(
+      fetchAssetProcessingJobs,
+      1000
+    );
+
+    return () => {
+      clearInterval(fetchAssetProcessingJobsInterval);
+    };
+  }, [fetchAssetProcessingJobs]);
 
   const getFileType = (file: File) => {
     if (file.type.startsWith("video/")) return "video";
@@ -123,6 +176,7 @@ function ManageUploadStep({ projectId }: ManageUploadStepprops) {
         isLoading={isLoading}
         setDeleteAssetId={setDeleteAssetId}
         uploadAssets={uploadAssets}
+        assetJobStatus={assetJobbStatus}
       />
       <ConfirmationModel
         isOpen={!!deleteAssetId}
